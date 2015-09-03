@@ -19,9 +19,10 @@ CONFIG_KEY_PORT = 'port'
 CONFIG_KEY_RESPONSE_CODE = 'response_code'
 DEFAULT_CONFIG = {CONFIG_KEY_HOST: 'localhost', CONFIG_KEY_PORT: 3000, CONFIG_KEY_RESPONSE_CODE: 200}
 
-parser = optparse.OptionParser()
-parser.add_option('-c', dest='config', default='')
-parser.add_option('-v', dest='verbose', action='store_true', default=False, help='print all information')
+option_list = [optparse.make_option('-c', dest='config', default=''),
+               optparse.make_option('-v', dest='verbose', action='store_true', default=False,
+                                    help='print all information')]
+parser = optparse.OptionParser(usage='Usage: %prog [-c config-file] [-v] json-data', option_list=option_list)
 opt, args = parser.parse_args()
 
 if opt.verbose is True:
@@ -38,7 +39,6 @@ if len(args) > 1:
     usage()
     exit(1)
 
-
 config = DEFAULT_CONFIG
 if opt.config != '':
     config_file = open(opt.config)
@@ -54,7 +54,6 @@ if opt.config != '':
         config_file.close()
 if opt.verbose is True:
     print 'config: ' + str(config)
-
 
 try:
     response_file = open(args[0])
