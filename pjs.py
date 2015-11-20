@@ -39,6 +39,7 @@ if len(args) > 1:
     usage()
     exit(1)
 
+
 config = DEFAULT_CONFIG
 if opt.config != '':
     config_file = open(opt.config)
@@ -59,7 +60,7 @@ try:
     response_file = open(args[0])
     response = response_file.read()
     if json_utils.validate(response) is False:
-        print 'response is not an illegal json string'
+        print 'response is an illegal json string'
         exit(1)
 finally:
     response_file.close()
@@ -71,7 +72,13 @@ class JsonServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     def do_GET(self):
         self._log_request()
         self.send_response(config[CONFIG_KEY_RESPONSE_CODE])
-        self.wfile.write(response)
+        self.end_headers()
+        try:
+            _response_file = open(args[0])
+            _response = _response_file.read()
+            self.wfile.write(_response)
+        finally:
+            response_file.close()
 
     def do_POST(self):
         self.do_GET()
