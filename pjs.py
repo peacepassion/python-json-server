@@ -55,7 +55,6 @@ if opt.config != '':
 if opt.verbose is True:
     print 'config: ' + str(config)
 
-
 try:
     response_file = open(args[0])
     response = response_file.read()
@@ -73,7 +72,12 @@ class JsonServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         self._log_request()
         self.send_response(config[CONFIG_KEY_RESPONSE_CODE])
         self.end_headers()
-        self.wfile.write(response)
+        try:
+            _response_file = open(args[0])
+            _response = _response_file.read()
+            self.wfile.write(_response)
+        finally:
+            response_file.close()
 
     def do_POST(self):
         self.do_GET()
