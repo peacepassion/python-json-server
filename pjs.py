@@ -60,7 +60,7 @@ try:
     response_file = open(args[0])
     response = response_file.read()
     if json_utils.validate(response) is False:
-        print 'response is not an illegal json string'
+        print 'response is an illegal json string'
         exit(1)
 finally:
     response_file.close()
@@ -72,6 +72,7 @@ class JsonServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     def do_GET(self):
         self._log_request()
         self.send_response(config[CONFIG_KEY_RESPONSE_CODE])
+        self.end_headers()
         self.wfile.write(response)
 
     def do_POST(self):
