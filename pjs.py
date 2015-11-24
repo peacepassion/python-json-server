@@ -4,9 +4,10 @@ __author__ = 'peacepassion'
 
 import optparse
 import json
-import json_utils
-import SimpleHTTPServer
+import BaseHTTPServer
 import SocketServer
+
+import json_utils
 
 
 def usage():
@@ -68,10 +69,11 @@ if opt.verbose:
     print 'response content: ' + str(response)
 
 
-class JsonServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
+class JsonServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def do_GET(self):
         self._log_request()
         self.send_response(config[CONFIG_KEY_RESPONSE_CODE])
+        self.send_header("Content-Type", "application/json")
         self.end_headers()
         try:
             _response_file = open(args[0])
