@@ -1,2 +1,10 @@
 port = 3001
 response_code = 210
+
+[user]
+response_file = demo_response_user.json
+response_code = 200
+
+[order]
+response_file = demo_response_order.json
+response_code = 200
