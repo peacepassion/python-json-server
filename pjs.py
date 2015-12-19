@@ -1,44 +1,60 @@
 # /usr/bin/python
 
-__author__ = 'peacepassion'
-
 import BaseHTTPServer
 import SocketServer
-
 import config_parser
 
-cfg = config_parser.MyConfigParser()
+__author__ = 'peacepassion'
 
-if cfg.is_verbose():
-    print '[global config]'
-    print cfg.global_config()
 
-    print '[each section]'
-    section_cfgs = cfg.section_configs()
-    for key in section_cfgs.keys():
-        print key
-        print section_cfgs[key]
+def _read_config():
+    cfg = config_parser.MyConfigParser()
+
+    if cfg.is_verbose():
+        print '[global config]'
+        print cfg.global_config()
+
+        print '[each section]'
+        section_cfgs = cfg.section_configs()
+        for key in section_cfgs:
+            print '----%s \n%s' % (key, section_cfgs[key])
+
+    return cfg
+
+
+def main():
+    cfg = _read_config()
+    _start_server(cfg)
+    return 0
+
+
+def _start_server(_cfg):
+    JsonServerHandler.cfg = _cfg
+    httpd = SocketServer.TCPServer((_cfg.global_config().host, _cfg.global_config().port), JsonServerHandler)
+    httpd.serve_forever()
 
 
 class JsonServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
-    def do_GET(self):
-        self._log_request()
+    cfg = None
 
-        code, body = self.__build_response__()
+    def do_GET(self):
+        self.__log_request()
+
+        code, body = self.__build_response()
         self.send_response(code)
         self.send_header("Content-Type", "application/json")
         self.end_headers()
 
         self.wfile.write(body)
 
-    def __build_response__(self):
-        body = cfg.global_config().response_body
-        code = cfg.global_config().response_code
+    def __build_response(self):
+        body = JsonServerHandler.cfg.global_config().response_body
+        code = JsonServerHandler.cfg.global_config().response_code
 
         request_path = self.path
-        for _key in cfg.section_configs().keys():
+        for _key in JsonServerHandler.cfg.section_configs().keys():
             if _key in request_path:
-                target_cfg = cfg.section_configs()[_key]
+                target_cfg = JsonServerHandler.cfg.section_configs()[_key]
                 body_file = open(target_cfg.response_file)
 
                 try:
@@ -55,10 +71,11 @@ class JsonServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def do_POST(self):
         self.do_GET()
 
-    def _log_request(self):
+    def __log_request(self):
         SEP = '  '
-        print str(self.command) + SEP + str(self.client_address) + SEP + str(self.path)
+        print SEP.join([str(self.command), str(self.client_address), str(self.path)])
 
 
-httpd = SocketServer.TCPServer((cfg.global_config().host, cfg.global_config().port), JsonServerHandler)
-httpd.serve_forever()
+if __name__ == '__main__':
+    status = main()
+    exit(status)
