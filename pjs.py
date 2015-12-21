@@ -71,6 +71,9 @@ class JsonServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def do_POST(self):
         self.do_GET()
 
+    def do_PUT(self):
+        self.do_PUT()
+
     def __log_request(self):
         SEP = '  '
         print SEP.join([str(self.command), str(self.client_address), str(self.path)])
