@@ -77,9 +77,6 @@ class MyConfigParser:
         parser = optparse.OptionParser(usage='Usage: %prog [-v] config-file', option_list=option_list)
         self.__opt, self.__args = parser.parse_args()
 
-        if self.__opt.verbose:
-            print 'opt: %s' % str(self.__opt)
-            print 'args: %s' % str(self.__args)
         if self.__args is False:  # judge if list's length does not equals zero
             print 'fail to find config-file'
             exit(1)

@@ -17,6 +17,7 @@ config  file used for router and response customization
 *  json-string response, written in json-data-file
 *  config response code, e.g 200, 500
 *  route different request path according to path key
+*  all configuration can be changed without restart server except host address and port
 
 ## Demo
 Following is the demo config file.  
@@ -49,3 +50,6 @@ Each section contains following options.
 * `response_code`  This defines a response code for the response.
 
 If one section lacks one option, the global counterpart will be used as default. But response_file cannot be omit, otherwise, the section would be useless.
+
+## highlight
+* `global response_code`, `section response_file`, `section response_code`, `section response file content` can be changed during server runtime and response will be changed accordingly fot the following request.  

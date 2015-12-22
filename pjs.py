@@ -9,6 +9,11 @@ __author__ = 'peacepassion'
 
 def _read_config():
     cfg = config_parser.MyConfigParser()
+    return cfg
+
+
+def main():
+    cfg = _read_config()
 
     if cfg.is_verbose():
         print '[global config]'
@@ -19,24 +24,16 @@ def _read_config():
         for key in section_cfgs:
             print '----%s \n%s' % (key, section_cfgs[key])
 
-    return cfg
-
-
-def main():
-    cfg = _read_config()
     _start_server(cfg)
     return 0
 
 
 def _start_server(_cfg):
-    JsonServerHandler.cfg = _cfg
     httpd = SocketServer.TCPServer((_cfg.global_config().host, _cfg.global_config().port), JsonServerHandler)
     httpd.serve_forever()
 
 
 class JsonServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
-    cfg = None
-
     def do_GET(self):
         self.__log_request()
 
@@ -48,13 +45,15 @@ class JsonServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def __build_response(self):
-        body = JsonServerHandler.cfg.global_config().response_body
-        code = JsonServerHandler.cfg.global_config().response_code
+        cfg = _read_config()
+
+        body = cfg.global_config().response_body
+        code = cfg.global_config().response_code
 
         request_path = self.path
-        for _key in JsonServerHandler.cfg.section_configs().keys():
+        for _key in cfg.section_configs().keys():
             if _key in request_path:
-                target_cfg = JsonServerHandler.cfg.section_configs()[_key]
+                target_cfg = cfg.section_configs()[_key]
                 body_file = open(target_cfg.response_file)
 
                 try:
@@ -75,8 +74,8 @@ class JsonServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.do_PUT()
 
     def __log_request(self):
-        SEP = '  '
-        print SEP.join([str(self.command), str(self.client_address), str(self.path)])
+        sep = '  '
+        print sep.join([str(self.command), str(self.client_address), str(self.path)])
 
 
 if __name__ == '__main__':
