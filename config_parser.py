@@ -22,16 +22,11 @@ def _usage():
 
 
 def _validate_response_file(file_path):
-    _response_file = open(file_path)
-
-    try:
+    with open(file_path) as _response_file:
         response = _response_file.read()
         if not json_utils.validate(response):
             return False
         return True
-
-    finally:
-        _response_file.close()
 
 
 class GlobalConfig:
@@ -90,9 +85,7 @@ class MyConfigParser:
         self.__global_config = GlobalConfig()
 
         if self.__config_file:  # '' means False in python
-            org_config_file = open(self.__config_file)
-
-            try:
+            with open(self.__config_file) as org_config_file:
                 org_config = org_config_file.read()
                 org_config = '[' + self.__fake_global_section + ']' + '\n' + org_config
                 cf = ConfigParser.RawConfigParser()
@@ -100,9 +93,6 @@ class MyConfigParser:
 
                 self.__parse_global_config__(cf)
                 self.__parse_each_section__(cf)
-
-            finally:
-                org_config_file.close()
 
     def __parse_global_config__(self, cf):
         if cf.has_option(self.__fake_global_section, CONFIG_KEY_HOST):

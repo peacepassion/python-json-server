@@ -54,16 +54,11 @@ class JsonServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         for _key in cfg.section_configs().keys():
             if _key in request_path:
                 target_cfg = cfg.section_configs()[_key]
-                body_file = open(target_cfg.response_file)
-
-                try:
+                with open(target_cfg.response_file) as body_file:
                     body = body_file.read()
                     code = target_cfg.response_code
 
-                    break
-
-                finally:
-                    body_file.close()
+                break
 
         return code, body
 
